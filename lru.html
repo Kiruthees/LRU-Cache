@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LRU Cache Visualizer (Dark Mode)</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+      text-align: center;
+      padding: 20px;
+    }
+    #cache, #map {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .block {
+      width: 60px;
+      height: 60px;
+      line-height: 60px;
+      margin: 8px;
+      background-color: #1e88e5;
+      border: 2px solid #90caf9;
+      border-radius: 8px;
+      font-size: 20px;
+      color: #fff;
+    }
+    .map-entry {
+      margin: 5px;
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      background: #2c2c2c;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #bbdefb;
+    }
+    input[type="number"] {
+      width: 120px;
+      padding: 6px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      margin-top: 10px;
+      background-color: #1e1e1e;
+      color: white;
+      border: 1px solid #555;
+    }
+    button {
+      padding: 8px 16px;
+      margin: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      background-color: #2196f3;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #1976d2;
+    }
+    .section-title {
+      margin-top: 30px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #90caf9;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🔄 LRU Cache Visualizer</h1>
+
+<input type="number" id="inputValue" placeholder="Enter value" />
+<button onclick="access()">Access</button>
+<button onclick="reset()">Reset</button>
+
+<div class="section-title">Doubly Linked List (MRU → LRU)</div>
+<div id="cache"></div>
+
+<div class="section-title">Hash Map (Value → Node Index)</div>
+<div id="map"></div>
+
+<script>
+  const capacity = 4;
+  let dll = [];  // Simulate doubly linked list
+  let hashMap = new Map();  // Simulate hash map
+
+  function render() {
+    // Render Linked List
+    const cacheDiv = document.getElementById('cache');
+    cacheDiv.innerHTML = '';
+    dll.forEach(val => {
+      const node = document.createElement('div');
+      node.className = 'block';
+      node.textContent = val;
+      cacheDiv.appendChild(node);
+    });
+
+    // Render Hash Map
+    const mapDiv = document.getElementById('map');
+    mapDiv.innerHTML = '';
+    hashMap.forEach((idx, key) => {
+      const entry = document.createElement('div');
+      entry.className = 'map-entry';
+      entry.textContent = `${key} → Node[${idx}]`;
+      mapDiv.appendChild(entry);
+    });
+  }
+
+  function access() {
+    const input = document.getElementById('inputValue');
+    const val = input.value;
+    if (val === '') return;
+
+    // If already exists, remove old position
+    if (hashMap.has(val)) {
+      const idx = hashMap.get(val);
+      dll.splice(idx, 1);
+    } else if (dll.length >= capacity) {
+      const removed = dll.pop();  // Remove LRU
+      hashMap.delete(removed);
+    }
+
+    dll.unshift(val);  // Add to MRU position
+
+    // Rebuild Hash Map
+    hashMap.clear();
+    dll.forEach((v, i) => hashMap.set(v, i));
+
+    render();
+    input.value = '';
+  }
+
+  function reset() {
+    dll = [];
+    hashMap.clear();
+    render();
+  }
+
+  render();
+</script>
+
+</body>
+</html>
