@@ -58,21 +58,35 @@ capacity = int(input("Enter capacity of LRU Cache: "))
 lru = LRUCache(capacity)
 
 n = int(input("Enter number of operations: "))
-print("Choose mode:\n1 key value  --> put\n2 key        --> get\n3            --> print cache")
 
-for _ in range(n):
-    parts = input().strip().split()
-    if not parts:
+for i in range(n):
+    print(f"\nOperation {i+1}:")
+    print("Select operation:")
+    print("1 - Put")
+    print("2 - Get")
+    print("3 - Print Cache")
+    
+    try:
+        op = int(input("Enter choice (1/2/3): ").strip())
+    except ValueError:
+        print("Invalid input. Skipping operation.")
         continue
-    mode = int(parts[0])
-    if mode == 1:
-        key = int(parts[1])
-        value = int(parts[2])
-        lru.put(key, value)
-    elif mode == 2:
-        key = int(parts[1])
-        print(lru.get(key))
-    elif mode == 3:
+
+    if op == 1:
+        try:
+            key = int(input("Enter key: "))
+            value = int(input("Enter value: "))
+            lru.put(key, value)
+        except ValueError:
+            print("Invalid key or value.")
+    elif op == 2:
+        try:
+            key = int(input("Enter key: "))
+            result = lru.get(key)
+            print(f"Value: {result}")
+        except ValueError:
+            print("Invalid key.")
+    elif op == 3:
         lru.print_cache()
     else:
-        print("Invalid mode.")
+        print("Invalid operation.")
